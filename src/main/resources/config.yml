@@ -29,6 +29,11 @@ messages:
     delwarp-content: "请选择要删除的传送点:"
     set-private-to-public-title: "设置为公共家"
     set-private-to-public-content: "选择要设置为公共家的家:"
+    rename-home-select-title: "重命名家园"
+    rename-home-select-content: "选择要重命名的家园:"
+    rename-home-title: "重命名家园"
+    rename-home-input: "为 {0} 输入新名称:"
+    rename-home-placeholder: "例如: newname"
     
     # 输入提示和占位符
     sethome-input: "请输入家的名称:"
@@ -47,6 +52,7 @@ messages:
       teleport-warp: "> 传送"
       delete: "x 删除"
       set-private-to-public: ">> 设为公共家"
+      rename: "@ 重命名"
 
 # 调试模式
 debug: false
@@ -63,6 +69,7 @@ system:
   empty-player-or-public-homes: "传入了空的玩家或公共家园列表!"
   empty-player-or-warps: "传入了空的玩家或传送点列表!"
   home-set-to-public: "§a已将家园 {0} 设置为公共家"
+  home-renamed: "§a已将家园 {0} 重命名为 {1}"
 
 debug:
   open-home-manage: "为玩家 {0} 打开家园管理表单"
