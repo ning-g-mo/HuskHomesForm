@@ -1,0 +1,29 @@
+name: HuskHomesForm
+version: '1.0.0'
+main: cn.ningmo.huskhomesform.HuskHomesForm
+api-version: '1.21'
+depend: [HuskHomes, floodgate]
+softdepend: [Cumulus]
+commands:
+  homef:
+    description: 打开家园传送表单
+    usage: /homef
+    aliases: [homform, homegui]
+  phomef:
+    description: 打开公共家园传送表单
+    usage: /phomef
+    aliases: [phomeform, phomegui]
+  warpf:
+    description: 打开传送点表单
+    usage: /warpf
+    aliases: [warpform, warpgui]
+# 添加权限声明
+permissions:
+  huskhomesform.use:
+    description: 允许使用基岩版表单
+    default: true
+  huskhomesform.admin:
+    description: 管理员权限
+    default: op
+    children:
+      huskhomesform.use: true 
