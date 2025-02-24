@@ -2,6 +2,29 @@ messages:
   no-homes: "§c你还没有设置任何家!"
   no-public-homes: "§c没有任何公共家!"
   no-warps: "§c没有任何传送点!"
+  
+  system:
+    player-only: "§c该命令只能由玩家执行!"
+    no-permission: "§c你没有权限使用此命令!"
+    form-send-failed: "§c表单发送失败，请重试!"
+    setting-home: "§a正在设置家园: {0}"
+    setting-public-home: "§a正在设置公共家: {0}"
+    setting-warp: "§a正在设置传送点: {0}"
+    empty-player-or-homes: "传入了空的玩家或家园列表!"
+    empty-player-or-public-homes: "传入了空的玩家或公共家园列表!"
+    empty-player-or-warps: "传入了空的玩家或传送点列表!"
+    home-set-to-public: "§a已将家园 {0} 设置为公共家"
+    home-renamed: "§a已将家园 {0} 重命名为 {1}"
+  
+  debug:
+    open-home-manage: "为玩家 {0} 打开家园管理表单"
+    available-homes: "可用的家园: {0}"
+    open-public-home-manage: "为玩家 {0} 打开公共家园管理表单"
+    available-public-homes: "可用的公共家园: {0}"
+    open-warp-manage: "为玩家 {0} 打开传送点管理表单"
+    available-warps: "可用的传送点: {0}"
+    form-error: "发送表单时出错: {0}"
+  
   form:
     home-title: "我的家"
     home-content: "请选择要传送的家:"
@@ -56,25 +79,3 @@ messages:
 
 # 调试模式
 debug: false
-
-# 系统消息
-system:
-  player-only: "§c该命令只能由玩家执行!"
-  no-permission: "§c你没有权限使用此命令!"
-  form-send-failed: "§c表单发送失败，请重试!"
-  setting-home: "§a正在设置家园: {0}"
-  setting-public-home: "§a正在设置公共家: {0}"
-  setting-warp: "§a正在设置传送点: {0}"
-  empty-player-or-homes: "传入了空的玩家或家园列表!"
-  empty-player-or-public-homes: "传入了空的玩家或公共家园列表!"
-  empty-player-or-warps: "传入了空的玩家或传送点列表!"
-  home-set-to-public: "§a已将家园 {0} 设置为公共家"
-  home-renamed: "§a已将家园 {0} 重命名为 {1}"
-  debug:
-    open-home-manage: "为玩家 {0} 打开家园管理表单"
-    available-homes: "可用的家园: {0}"
-    open-public-home-manage: "为玩家 {0} 打开公共家园管理表单"
-    available-public-homes: "可用的公共家园: {0}"
-    open-warp-manage: "为玩家 {0} 打开传送点管理表单"
-    available-warps: "可用的传送点: {0}"
-    form-error: "发送表单时出错: {0}"
