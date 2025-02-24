@@ -11,10 +11,12 @@ import org.geysermc.cumulus.form.Form;
 import org.geysermc.cumulus.response.SimpleFormResponse;
 import org.geysermc.cumulus.response.CustomFormResponse;
 import org.bukkit.Bukkit;
-import cn.ningmo.huskhomesform.api.Home;
-import cn.ningmo.huskhomesform.api.OnlineUser;
-import cn.ningmo.huskhomesform.api.BukkitUser;
-import cn.ningmo.huskhomesform.api.HuskHomesAPI;
+import net.william278.huskhomes.position.Home;
+import net.william278.huskhomes.user.OnlineUser;
+import net.william278.huskhomes.user.BukkitUser;
+import net.william278.huskhomes.api.HuskHomesAPI;
+import cn.ningmo.huskhomesform.HuskHomesForm;
+import net.william278.huskhomes.BukkitHuskHomes;
 
 public class FormUtil {
     
@@ -55,7 +57,9 @@ public class FormUtil {
     
     public static void sendPublicHomeListForm(Player player, List<String> publicHomes) {
         if (player == null || publicHomes == null) {
-            HuskHomesForm.getInstance().getLogger().warning("传入了空的玩家或公共家园列表!");
+            HuskHomesForm.getInstance().getLogger().warning(
+                HuskHomesForm.getInstance().getConfig().getString("messages.system.empty-player-or-public-homes")
+            );
             return;
         }
         try {
@@ -63,12 +67,12 @@ public class FormUtil {
                 .title(HuskHomesForm.getInstance().getConfig().getString("messages.form.phome-title"))
                 .content(HuskHomesForm.getInstance().getConfig().getString("messages.form.phome-content"));
 
-            // 获取 HuskHomes API
-            HuskHomesAPI api = HuskHomesForm.getInstance().getHuskHomesAPI();
-            OnlineUser user = BukkitUser.adapt(player, api);
+            // 获取 HuskHomes 插件实例和 API
+            BukkitHuskHomes plugin = (BukkitHuskHomes) Bukkit.getPluginManager().getPlugin("HuskHomes");
+            OnlineUser user = BukkitUser.adapt(player, plugin);
             
             // 获取所有公共家并显示创建者
-            api.getPublicHomes().thenAccept(homes -> {
+            HuskHomesAPI.getInstance().getPublicHomes().thenAccept(homes -> {
                 for (Home home : homes) {
                     String ownerName = home.getOwner().getUsername();
                     form.button(home.getName() + "\n§7by " + ownerName);
@@ -84,8 +88,11 @@ public class FormUtil {
                 FloodgateApi.getInstance().getPlayer(player.getUniqueId()).sendForm(form.build());
             });
         } catch (Exception e) {
-            player.sendMessage("§c表单发送失败，请重试!");
-            HuskHomesForm.getInstance().getLogger().warning("发送表单时出错: " + e.getMessage());
+            player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.form-send-failed"));
+            HuskHomesForm.getInstance().getLogger().warning(
+                HuskHomesForm.getInstance().getConfig().getString("messages.debug.form-error")
+                    .replace("{0}", e.getMessage())
+            );
         }
     }
 

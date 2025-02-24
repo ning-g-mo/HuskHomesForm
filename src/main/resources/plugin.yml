@@ -1,5 +1,5 @@
 name: HuskHomesForm
-version: '1.0.0'
+version: '1.0.1'
 main: cn.ningmo.huskhomesform.HuskHomesForm
 api-version: '1.21'
 depend: [HuskHomes, floodgate]
