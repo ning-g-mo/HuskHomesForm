@@ -15,6 +15,7 @@ messages:
     empty-player-or-warps: "传入了空的玩家或传送点列表!"
     home-set-to-public: "§a已将家园 {0} 设置为公共家"
     home-renamed: "§a已将家园 {0} 重命名为 {1}"
+    database-error: "§c获取数据时出错，请稍后重试或联系管理员!"
   
   debug:
     open-home-manage: "为玩家 {0} 打开家园管理表单"

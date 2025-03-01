@@ -26,7 +26,7 @@ public class PublicHomeFormCommand implements CommandExecutor {
         Player player = (Player) sender;
         
         if (!player.hasPermission("huskhomesform.use")) {
-            player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.no-permission"));
+            sender.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.no-permission"));
             return true;
         }
         
@@ -37,21 +37,31 @@ public class PublicHomeFormCommand implements CommandExecutor {
         
         BukkitHuskHomes plugin = (BukkitHuskHomes) Bukkit.getPluginManager().getPlugin("HuskHomes");
         OnlineUser user = BukkitUser.adapt(player, plugin);
-        HuskHomesForm.getInstance().getHuskHomesAPI().getPublicHomes().thenAccept(homes -> {
-            List<String> homeNames = homes.stream()
-                .map(Home::getName)
-                .collect(Collectors.toList());
-            
-            if (homeNames.isEmpty()) {
-                player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.no-public-homes"));
-                if (player.hasPermission("huskhomes.command.setphome")) {
-                    FormUtil.sendSetPublicHomeForm(player);
+        
+        try {
+            HuskHomesForm.getInstance().getHuskHomesAPI().getPublicHomes().thenAccept(homes -> {
+                List<String> homeNames = homes.stream()
+                    .map(Home::getName)
+                    .collect(Collectors.toList());
+                
+                if (homeNames.isEmpty()) {
+                    player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.no-public-homes"));
+                    if (player.hasPermission("huskhomes.command.setphome")) {
+                        FormUtil.sendSetPublicHomeForm(player);
+                    }
+                    return;
                 }
-                return;
-            }
-            
-            FormUtil.sendPublicHomeManageForm(player, homeNames);
-        });
+                
+                FormUtil.sendPublicHomeManageForm(player, homeNames);
+            }).exceptionally(throwable -> {
+                player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.database-error"));
+                HuskHomesForm.getInstance().getLogger().severe("获取公共家园数据时出错: " + throwable.getMessage());
+                return null;
+            });
+        } catch (Exception e) {
+            player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.database-error"));
+            HuskHomesForm.getInstance().getLogger().severe("获取公共家园数据时出错: " + e.getMessage());
+        }
         
         return true;
     }
