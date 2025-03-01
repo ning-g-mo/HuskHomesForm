@@ -19,14 +19,14 @@ public class HomeFormCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.player-only"));
+            sender.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.player-only"));
             return true;
         }
         
         Player player = (Player) sender;
         
         if (!player.hasPermission("huskhomesform.use")) {
-            player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.no-permission"));
+            player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.no-permission"));
             return true;
         }
         

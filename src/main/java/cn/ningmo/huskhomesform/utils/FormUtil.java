@@ -6,6 +6,8 @@ import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.cumulus.form.CustomForm;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import cn.ningmo.huskhomesform.HuskHomesForm;
 import org.geysermc.cumulus.form.Form;
 import org.geysermc.cumulus.response.SimpleFormResponse;
@@ -15,7 +17,6 @@ import net.william278.huskhomes.position.Home;
 import net.william278.huskhomes.user.OnlineUser;
 import net.william278.huskhomes.user.BukkitUser;
 import net.william278.huskhomes.api.HuskHomesAPI;
-import cn.ningmo.huskhomesform.HuskHomesForm;
 import net.william278.huskhomes.BukkitHuskHomes;
 
 public class FormUtil {
@@ -49,14 +50,14 @@ public class FormUtil {
         } catch (Exception e) {
             player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.form-send-failed"));
             HuskHomesForm.getInstance().getLogger().warning(
-                HuskHomesForm.getInstance().getConfig().getString("messages.system.form-error")
+                HuskHomesForm.getInstance().getConfig().getString("messages.debug.form-error")
                     .replace("{0}", e.getMessage())
             );
         }
     }
     
-    public static void sendPublicHomeListForm(Player player, List<String> publicHomes) {
-        if (player == null || publicHomes == null) {
+    public static void sendPublicHomeListForm(Player player, List<Home> homes) {
+        if (player == null || homes == null) {
             HuskHomesForm.getInstance().getLogger().warning(
                 HuskHomesForm.getInstance().getConfig().getString("messages.system.empty-player-or-public-homes")
             );
@@ -67,26 +68,20 @@ public class FormUtil {
                 .title(HuskHomesForm.getInstance().getConfig().getString("messages.form.phome-title"))
                 .content(HuskHomesForm.getInstance().getConfig().getString("messages.form.phome-content"));
 
-            // 获取 HuskHomes 插件实例和 API
-            BukkitHuskHomes plugin = (BukkitHuskHomes) Bukkit.getPluginManager().getPlugin("HuskHomes");
-            OnlineUser user = BukkitUser.adapt(player, plugin);
-            
-            // 获取所有公共家并显示创建者
-            HuskHomesAPI.getInstance().getPublicHomes().thenAccept(homes -> {
-                for (Home home : homes) {
-                    String ownerName = home.getOwner().getUsername();
-                    form.button(home.getName() + "\n§7by " + ownerName);
+            for (Home home : homes) {
+                String homeName = home.getName();
+                String ownerName = home.getOwner().getUsername();
+                form.button(homeName + "\n§6by " + ownerName);
+            }
+
+            form.validResultHandler(response -> {
+                if (response != null) {
+                    String selectedHome = homes.get(response.clickedButtonId()).getName();
+                    player.performCommand("phome " + selectedHome);
                 }
-
-                form.validResultHandler(response -> {
-                    if (response != null) {
-                        String selectedHome = publicHomes.get(response.clickedButtonId());
-                        player.performCommand("phome " + selectedHome);
-                    }
-                });
-
-                FloodgateApi.getInstance().getPlayer(player.getUniqueId()).sendForm(form.build());
             });
+
+            FloodgateApi.getInstance().getPlayer(player.getUniqueId()).sendForm(form.build());
         } catch (Exception e) {
             player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.form-send-failed"));
             HuskHomesForm.getInstance().getLogger().warning(
@@ -113,8 +108,11 @@ public class FormUtil {
 
             FloodgateApi.getInstance().getPlayer(player.getUniqueId()).sendForm(form.build());
         } catch (Exception e) {
-            player.sendMessage("§c表单发送失败，请重试!");
-            HuskHomesForm.getInstance().getLogger().warning("发送表单时出错: " + e.getMessage());
+            player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.form-send-failed"));
+            HuskHomesForm.getInstance().getLogger().warning(
+                HuskHomesForm.getInstance().getConfig().getString("messages.debug.form-error")
+                    .replace("{0}", e.getMessage())
+            );
         }
     }
     
@@ -171,7 +169,7 @@ public class FormUtil {
         } catch (Exception e) {
             player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.form-send-failed"));
             HuskHomesForm.getInstance().getLogger().warning(
-                HuskHomesForm.getInstance().getConfig().getString("messages.system.form-error")
+                HuskHomesForm.getInstance().getConfig().getString("messages.debug.form-error")
                     .replace("{0}", e.getMessage())
             );
         }
@@ -199,7 +197,7 @@ public class FormUtil {
         } catch (Exception e) {
             player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.form-send-failed"));
             HuskHomesForm.getInstance().getLogger().warning(
-                HuskHomesForm.getInstance().getConfig().getString("messages.system.form-error")
+                HuskHomesForm.getInstance().getConfig().getString("messages.debug.form-error")
                     .replace("{0}", e.getMessage())
             );
         }
@@ -224,8 +222,11 @@ public class FormUtil {
 
             FloodgateApi.getInstance().getPlayer(player.getUniqueId()).sendForm(form.build());
         } catch (Exception e) {
-            player.sendMessage("§c表单发送失败，请重试!");
-            HuskHomesForm.getInstance().getLogger().warning("发送表单时出错: " + e.getMessage());
+            player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.form-send-failed"));
+            HuskHomesForm.getInstance().getLogger().warning(
+                HuskHomesForm.getInstance().getConfig().getString("messages.debug.form-error")
+                    .replace("{0}", e.getMessage())
+            );
         }
     }
     
@@ -258,7 +259,15 @@ public class FormUtil {
                 String action = buttons.get(response.clickedButtonId());
                 switch (action) {
                     case "setphome" -> sendSetPublicHomeForm(player);
-                    case "teleport" -> sendPublicHomeListForm(player, publicHomes);
+                    case "teleport" -> {
+                        // 重新获取公共家园列表
+                        HuskHomesAPI.getInstance().getPublicHomes().thenAccept(homes -> {
+                            sendPublicHomeListForm(player, homes);
+                        }).exceptionally(throwable -> {
+                            player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.database-error"));
+                            return null;
+                        });
+                    }
                     case "delete" -> sendDeletePublicHomeForm(player, publicHomes);
                 }
             });

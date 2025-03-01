@@ -37,21 +37,31 @@ public class WarpFormCommand implements CommandExecutor {
         
         BukkitHuskHomes plugin = (BukkitHuskHomes) Bukkit.getPluginManager().getPlugin("HuskHomes");
         OnlineUser user = BukkitUser.adapt(player, plugin);
-        HuskHomesForm.getInstance().getHuskHomesAPI().getWarps().thenAccept(warps -> {
-            List<String> warpNames = warps.stream()
-                .map(Warp::getName)
-                .collect(Collectors.toList());
-            
-            if (warpNames.isEmpty()) {
-                player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.no-warps"));
-                if (player.hasPermission("huskhomes.command.setwarp")) {
-                    FormUtil.sendSetWarpForm(player);
+        
+        try {
+            HuskHomesForm.getInstance().getHuskHomesAPI().getWarps().thenAccept(warps -> {
+                List<String> warpNames = warps.stream()
+                    .map(Warp::getName)
+                    .collect(Collectors.toList());
+                
+                if (warpNames.isEmpty()) {
+                    player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.no-warps"));
+                    if (player.hasPermission("huskhomes.command.setwarp")) {
+                        FormUtil.sendSetWarpForm(player);
+                    }
+                    return;
                 }
-                return;
-            }
-            
-            FormUtil.sendWarpManageForm(player, warpNames);
-        });
+                
+                FormUtil.sendWarpManageForm(player, warpNames);
+            }).exceptionally(throwable -> {
+                player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.database-error"));
+                HuskHomesForm.getInstance().getLogger().severe("获取传送点数据时出错: " + throwable.getMessage());
+                return null;
+            });
+        } catch (Exception e) {
+            player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.database-error"));
+            HuskHomesForm.getInstance().getLogger().severe("获取传送点数据时出错: " + e.getMessage());
+        }
         
         return true;
     }

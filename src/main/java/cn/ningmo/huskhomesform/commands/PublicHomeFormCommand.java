@@ -52,7 +52,7 @@ public class PublicHomeFormCommand implements CommandExecutor {
                     return;
                 }
                 
-                FormUtil.sendPublicHomeManageForm(player, homeNames);
+                FormUtil.sendPublicHomeListForm(player, homes);
             }).exceptionally(throwable -> {
                 player.sendMessage(HuskHomesForm.getInstance().getConfig().getString("messages.system.database-error"));
                 HuskHomesForm.getInstance().getLogger().severe("获取公共家园数据时出错: " + throwable.getMessage());
